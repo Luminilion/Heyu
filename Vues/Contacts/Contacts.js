@@ -3,20 +3,9 @@
 import React from 'react';
 import test from './test';
 import * as firebase from 'firebase';
+import firebaseApp from '../../firebase';
 import ElementContact from './ElementContact';
 import { Dimensions, StyleSheet, View, Text, TextInput, Button, FlatList, ImageBackground } from 'react-native';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBHFwLIieJmVzXzorVj3OnlsDQlwTPjsfU",
-    authDomain: "socialmap2-135c6.firebaseapp.com",
-    databaseURL: "https://socialmap2-135c6.firebaseio.com",
-    projectId: "socialmap2-135c6",
-    storageBucket: "socialmap2-135c6.appspot.com",
-    messagingSenderId: "476015574242"
-  };
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
 
 class Contacts extends React.Component {
 	
@@ -36,7 +25,7 @@ class Contacts extends React.Component {
    }
 	
 	listenForItems(itemsRef) {
-		itemsRef.on('value', (snap) => {
+		itemsRef.on('value', (snap) => { 
 
 		  // get children as an array
 		  var items = [];
@@ -61,13 +50,12 @@ class Contacts extends React.Component {
 		});
   }
    
-	_changeScreen = () => {
-	    this.props.navigation.navigate("Chat")
+	_changeScreen = (pseudoContact) => {
+	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
 
   }
   
   render() {
-	  console.log(this.props)
 	  
     return (
 	

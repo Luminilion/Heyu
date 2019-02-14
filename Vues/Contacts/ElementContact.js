@@ -11,7 +11,7 @@ class ElementContact extends React.Component {
 	
 		<TouchableOpacity
         style={styles.main_container}
-        onPress={() => changeScreen()}>
+        onPress={() => changeScreen(test.pseudo)}>
 		<View style={{ flex: 1, backgroundColor: 'white' }}>
 		<Image
           style={{height: 100}}

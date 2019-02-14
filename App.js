@@ -11,8 +11,6 @@ import * as firebase from 'firebase';
 import { StyleSheet, Text, View, FlatList, ListView } from 'react-native';
 
 
-
-
 export default class App extends React.Component {
 	
 
@@ -32,5 +30,6 @@ const styles = StyleSheet.create({
     
   },
 });
+
 
 
