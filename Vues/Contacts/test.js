@@ -1,0 +1,49 @@
+// Helpers/filmsData.js
+
+export default data = [
+   {
+	   id:1,
+	   pseudo:"boby"
+   },
+   {
+	   id:2,
+	   pseudo:"boby"
+   },
+   {
+	   id:3,
+	   pseudo:"boby"
+   },
+   {
+	   id:4,
+	   pseudo:"boby"
+   },
+   {
+	   id:5,
+	   pseudo:"boby"
+   },
+   {
+	   id:6,
+	   pseudo:"boby"
+   },
+   {
+	   id:7,
+	   pseudo:"boby"
+   },
+   {
+	   id:8,
+	   pseudo:"boby"
+   },
+   {
+	   id:9,
+	   pseudo:"boby"
+   },
+   {
+	   id:10,
+	   pseudo:"boby"
+   },
+   {
+	   id:11,
+	   pseudo:"boby"
+   }
+]
+
