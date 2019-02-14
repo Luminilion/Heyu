@@ -20,44 +20,68 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 class Contacts extends React.Component {
 	
-	listenForItems(itemsRef){
-		itemsRef.on('value', (snap) =>{
-		var items=[];
-		snap.forEach((child) => {
-			items.push({
-				title:child.val(),
-				_key:child.key
-			});
-		});
-		});
-		
-
-		
-		
-	}
-	
 	constructor(props){
 		super(props);
-		this.itemRefs = firebaseApp.database().ref("Utilisateurs/0/Contacts");
+		this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
+		this.state = {
+	  	dataSource: [{ id: 0, pseudo: 'Pizza' }], 
+	  	dialogVisible: false,
+	  	newItem: 'Invalid Item'
+	  };
+		
 	};
-	_changeScreen = (idFilm) => {
-    console.log("Display film with id " + idFilm)
+	
+	componentDidMount() {
+    	this.listenForItems(this.itemsRefs);
+   }
+	
+	listenForItems(itemsRef) {
+		itemsRef.on('value', (snap) => {
+
+		  // get children as an array
+		  var items = [];
+		  console.log(snap.val()[0].Contacts);
+		  snap.val()[0].Contacts.forEach((child) =>{
+			items.push({
+			  pseudo: child.pseudo,
+			  _key: child.key
+			});
+		  });
+		  console.log(items);
+
+		  
+		  items = items.map((item, index) => {
+			return {id: index, pseudo: item.pseudo};
+		  });
+
+		  this.setState({
+			dataSource: items
+		  });
+
+		});
+  }
+   
+	_changeScreen = () => {
 	    this.props.navigation.navigate("Chat")
 
   }
+  
   render() {
 	  console.log(this.props)
+	  
     return (
 	
 	
      
-	 <View style={{ flex: 1, backgroundColor:"green"}}>
+	 <View style={{ flex: 1,}}>
 	
 		<View style={{justifyContent:'center', alignItems:'center', marginTop: 30}}>
 			<TextInput placeholder="Rechercher un ami"/>
 		</View>
+		
+			
 		<FlatList
-		  data={test}
+		  data={this.state.dataSource}
 		  keyExtractor={(item) => item.id.toString()}
 		  renderItem={({item}) => <ElementContact test={item} changeScreen={this._changeScreen}/>}
 		/>
