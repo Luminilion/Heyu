@@ -4,7 +4,7 @@ import Bubble from './Bubble';
 import * as firebase from 'firebase';
 import firebaseApp from '../../firebase';
 
-import { StyleSheet, View, Text, TextInput, Button, FlatList, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, FlatList, Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 
 
 
@@ -12,36 +12,44 @@ class Chat extends React.Component {
 	
 constructor(props){
 		super(props);
-		this.itemsRefs = firebaseApp.database().ref("Discussions");
 		this.state = {
 	  	dataSource: [{ id: 0, sender: 0, texte: 'Ecris lui un message'}], 
 	  	dialogVisible: false,
-	  	newItem: 'Invalid Item'
+	  	newItem: 'Invalid Item',
+		ordre: true,
 	  };
+	  
+	  this.itemsRefs = firebaseApp.database().ref("Discussions");
+	  this.envoiRefs = firebaseApp.database().ref("Discussions/BobbyGerard");
 		
 	};
 	
 	
 componentDidMount() {
     	this.listenForItems(this.itemsRefs);
+		console.log("mouuuuuuuuuuuunt");
+		console.log(this.state.ordre);
 	
    }	
 	
 listenForItems(itemsRef) {
 	
 	itemsRef.on('value', (snap) => {
-		var nom = "Bobby"+this.props.navigation.getParam('pseudoContact');
+		var nomPremierOrdre = "Bobby"+this.props.navigation.getParam('pseudoContact');
+		var nomDeuxiemeOrdre = this.props.navigation.getParam('pseudoContact');+"Boby";
+		this.setState({ordre:false});
+		console.log("alors là le state de ordre c'est " + this.state.ordre);
 		
-		if(snap.val()[nom]!=undefined){
+		if(snap.val()[nomPremierOrdre]!=undefined){ 
 			
 			
 		
-		console.log("le snap est" + snap.val()[nom]);
+		console.log("le snap est" + snap.val()[nomPremierOrdre]);
 		
 		
 		  // get children as an array
 		  var items = [];
-		  snap.val()[nom].forEach((child) =>{
+		  snap.val()[nomPremierOrdre].forEach((child) =>{
 			items.push({
 			  sender: child.sender,
 			  texte: child.texte,
@@ -55,6 +63,30 @@ listenForItems(itemsRef) {
 		  });
 
 		}
+		
+		else{
+			if(snap.val()[nomDeuxiemeOrdre]!=undefined){ 
+			console.log("le snap est" + snap.val()[nomDeuxiemeOrdre]);
+		
+		
+			  // get children as an array
+			  var items = [];
+			  snap.val()[nomDeuxiemeOrdre].forEach((child) =>{
+				items.push({
+				  sender: child.sender,
+				  texte: child.texte,
+				  _key: child.key
+				});
+			  });
+
+			  
+			  items = items.map((item, index) => {
+				return {id: index, sender: item.sender, texte: item.texte};
+			  });
+			}
+			
+		}
+		
 		  this.setState({
 			dataSource: items
 		  });
@@ -62,12 +94,18 @@ listenForItems(itemsRef) {
 	
 
 		});
-		
-
-		
-		
-		
+	
 }
+
+_writeElem(sender, texte) {
+		this.envoiRefs.push({ sender, texte }).then((data)=>{
+			//success callback
+			console.log('data ' , data)
+		}).catch((error)=>{
+			//error callback
+			console.log('error ' , error)
+		});
+   }
   
   render() {
 	  
@@ -87,11 +125,15 @@ listenForItems(itemsRef) {
 		  renderItem={({item}) => <Bubble test={item}/>}
 		/>
 		<View style={styles.barre_message}>
-			<TextInput style={styles.input} placeholder="..."/>
-			<Image
-            style={{width: 50}}
-            source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
-			/>
+			<TextInput style={styles.input} placeholder="..." onChangeText={ (itemName) => this.setState({newItem: itemName}) }/>
+			<TouchableOpacity
+		    style={{height: 50, width: 50}}
+			onPress={ () => { this._writeElem(0, this.state.newItem)}}>
+				<Image
+				style={{width: 50, height: 50}}
+				source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
+				/>
+			</TouchableOpacity>
 		</View>
 		
      </KeyboardAvoidingView>
