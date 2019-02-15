@@ -29,7 +29,7 @@ export default class Loading extends React.Component {
   // Checks if user is authenticated as soon as components finished to mount
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'AppNavigationStack' : 'LoginNvaigationStack')
+      this.props.navigation.navigate(user ? 'AppNavigationStack' : 'LoginNavigationStack')
     })
   }
 
