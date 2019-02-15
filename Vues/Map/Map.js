@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
+import firebaseApp from '../../firebase';
 import icone from './bear.jpg';
 
 // Gets dimensions of screen to dynamically adjust 
@@ -19,26 +20,14 @@ const Images = [
 
 class Map extends React.Component {
 	
-
-	_changeScreenChat = () => {
-	this.props.navigation.navigate("Chat")
-
-  }
-  
-	_changeScreenContacts = () => {
-	this.props.navigation.navigate("Contacts")
-
-  }
-  
-	_changeScreenBonus = () => {
-	this.props.navigation.navigate("Bonus")
-
-  }
-  
-  render() {
-	  console.log('render')
-
-	this.state = {
+	constructor(props){
+		super(props);
+		this.state = {
+	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817}], 
+	  	dialogVisible: false,
+	  	newItem: 'Invalid Item',
+		ordre: true,
+		exist: false,
 	    markers: [
 	      {
 	        coordinate: {
@@ -85,6 +74,76 @@ class Map extends React.Component {
 		}
 	    
 	};
+	  
+	this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
+	this.envoiRefs = firebaseApp.database().ref("Utilisateurs/"+ "0");
+		
+	};
+	
+	componentDidMount() {
+    	this.listenForItems(this.itemsRefs);
+		console.log("mouuuuuuuuuuuunt");
+	
+   }	
+	
+	listenForItems(itemsRef) {
+		itemsRef.on('value', (snap) => { 
+
+		  // get children as an array
+		  var items = [];
+		  console.log(snap.val());
+		  snap.val().forEach((child) =>{
+			items.push({
+			  pseudo: child.pseudo,
+			  message: child.message,
+			  latitude: child.latitude,
+			  longitude: child.longitude,
+			  _key: child.key
+			});
+		  });
+		  console.log(items);
+
+		  
+		  items = items.map((item, index) => {
+			return {id: index, pseudo: item.pseudo, message: item.message, latitude: item.latitude, longitude: item.longitude, };
+		  });
+
+		  this.setState({
+			dataSource: items
+		  });
+
+		});
+  }
+  
+  _writeElem(message) {
+			this.envoiRefs.update({ message }).then((data)=>{
+			//success callback
+			console.log('data ' , data)
+			}).catch((error)=>{
+				//error callback
+				console.log('error ' , error)
+			});
+		
+   }
+	
+
+	_changeScreenChat = (pseudoContact) => {
+	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
+
+  }
+  
+	_changeScreenContacts = () => {
+	this.props.navigation.navigate("Contacts")
+
+  }
+  
+	_changeScreenBonus = () => {
+	this.props.navigation.navigate("Bonus")
+
+  }
+  
+  render() {
+	  console.log(this.state.dataSource)
 
     return (
 	
@@ -105,19 +164,24 @@ class Map extends React.Component {
 			  }}
 	      >
 		  
-			  <MapView.Marker key={1} onPress={() => this._changeScreen()} coordinate={{latitude: 45.521016, longitude: -122.6561917,}}>
-			        
-					
-					  <Text style={{backgroundColor: 'white', padding: 5}}>Salut à tous les amis</Text>
+				  
+				   {this.state.dataSource.map((marker, index) => {
+			    return (
+			      <MapView.Marker  onPress={() => this._changeScreenChat(marker.pseudo)} key={index} coordinate={{latitude: marker.latitude, longitude: marker.longitude}}>
+				  
 					  <Image
 						style={{width: 50, height:50}}
 						source={icone}
 					  />
-					  
-					
-					      
-			        
+					  <MapView.Callout style={{minWidth: 150}}>
+						<Text style={{fontWeight:'bold'}}>{marker.pseudo}</Text>
+						<Text>{marker.message}t</Text>
+					  </MapView.Callout>
 			      </MapView.Marker>
+			    );
+			  })}
+			  
+
 				  
 			  
 
@@ -142,12 +206,16 @@ class Map extends React.Component {
 
 	      <KeyboardAvoidingView behavior="padding" enabled>
 			<View style={styles.barre_message}>
-				<TextInput style={styles.input} placeholder="..."/>
-				<Image
-	            style={{width: 50}}
-	            source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
-				/>
-			</View>
+				<TextInput style={styles.input} placeholder="..." onChangeText={ (itemName) => this.setState({newItem: itemName}) }/>
+				<TouchableOpacity
+				style={{height: 50, width: 50}}
+				onPress={ () => { this._writeElem(this.state.newItem)}}>
+					<Image
+					style={{width: 50, height: 50}}
+					source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
+					/>
+				</TouchableOpacity>
+		</View>
 		  </KeyboardAvoidingView>
       </View>
 
