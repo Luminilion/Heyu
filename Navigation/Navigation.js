@@ -1,30 +1,34 @@
 // Navigation/Navigation.js
 
-import { createStackNavigator, createAppContainer } from 'react-navigation'
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation'
 import Map from '../Vues/Map/Map'
 import Contacts from '../Vues/Contacts/Contacts'
 import Chat from '../Vues/Chat/Chat'
 import Bonus from '../Vues/Bonus/Bonus'
+import Loading from '../Vues/Login/Loading'
+import Login from '../Vues/Login/Login'
+import SignUp from '../Vues/Login/SignUp'
 
+// Navigation stack for the app's logic : map, conversation, contacts and bonuses
+const AppNavigationStack = createStackNavigator({
+  Map : Map,
+  Contacts : Contacts,
+  Chat : Chat,
+  Bonus : Bonus
+})
 
-const SearchStackNavigator = createStackNavigator({
+// Nvaigation stack for login logic : login or sign up
+const LoginNavigationStack = createStackNavigator({
+  Login : Login,
+  SignUp : SignUp
+})
 
-  Map: {
-	screen: Map,
-	
-  },
-  Contacts: {
-	screen: Contacts,
-  },
-  Chat: {
-	screen: Chat, 
-  },
-  Bonus: {
-	screen: Bonus, 
-  },
-
-  
-},
+// AppContainer for navigation logic through the whole app
+export default createAppContainer(createSwitchNavigator(
+  {
+    Loading : Loading,
+    LoginNavigationStack : LoginNavigationStack,
+    AppNavigationStack : AppNavigationStack
+  }
+),
 {headerMode: 'none'})
-
-export default createAppContainer(SearchStackNavigator)
