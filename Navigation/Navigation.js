@@ -9,6 +9,8 @@ import Loading from '../Vues/Login/Loading'
 import Login from '../Vues/Login/Login'
 import SignUp from '../Vues/Login/SignUp'
 
+import Parameters from '../Vues/Parameters/Parameters'
+
 // Navigation stack for the app's logic : map, conversation, contacts and bonuses
 const AppNavigationStack = createStackNavigator({
   Map : Map,
@@ -27,6 +29,7 @@ const LoginNavigationStack = createStackNavigator({
 export default createAppContainer(createSwitchNavigator(
   {
     Loading : Loading,
+    Parameters : Parameters,
     LoginNavigationStack : LoginNavigationStack,
     AppNavigationStack : AppNavigationStack
   }
