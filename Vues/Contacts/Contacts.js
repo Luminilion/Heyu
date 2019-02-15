@@ -3,61 +3,73 @@
 import React from 'react';
 import test from './test';
 import * as firebase from 'firebase';
+import firebaseApp from '../../firebase';
 import ElementContact from './ElementContact';
 import { Dimensions, StyleSheet, View, Text, TextInput, Button, FlatList, ImageBackground } from 'react-native';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBHFwLIieJmVzXzorVj3OnlsDQlwTPjsfU",
-    authDomain: "socialmap2-135c6.firebaseapp.com",
-    databaseURL: "https://socialmap2-135c6.firebaseio.com",
-    projectId: "socialmap2-135c6",
-    storageBucket: "socialmap2-135c6.appspot.com",
-    messagingSenderId: "476015574242"
-  };
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-
 class Contacts extends React.Component {
-	
-	listenForItems(itemsRef){
-		itemsRef.on('value', (snap) =>{
-		var items=[];
-		snap.forEach((child) => {
-			items.push({
-				title:child.val(),
-				_key:child.key
-			});
-		});
-		});
-		
-
-		
-		
-	}
 	
 	constructor(props){
 		super(props);
-		this.itemRefs = firebaseApp.database().ref("Utilisateurs/0/Contacts");
+		this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
+		this.state = {
+	  	dataSource: [{ id: 0, pseudo: 'Pizza' }], 
+	  	dialogVisible: false,
+	  	newItem: 'Invalid Item'
+	  };
+		
 	};
-	_changeScreen = (idFilm) => {
-    console.log("Display film with id " + idFilm)
-	    this.props.navigation.navigate("Chat")
+	
+	componentDidMount() {
+    	this.listenForItems(this.itemsRefs);
+   }
+	
+	listenForItems(itemsRef) {
+		itemsRef.on('value', (snap) => { 
+
+		  // get children as an array
+		  var items = [];
+		  console.log(snap.val()[0].Contacts);
+		  snap.val()[0].Contacts.forEach((child) =>{
+			items.push({
+			  pseudo: child.pseudo,
+			  _key: child.key
+			});
+		  });
+		  console.log(items);
+
+		  
+		  items = items.map((item, index) => {
+			return {id: index, pseudo: item.pseudo};
+		  });
+
+		  this.setState({
+			dataSource: items
+		  });
+
+		});
+  }
+   
+	_changeScreen = (pseudoContact) => {
+	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
 
   }
+  
   render() {
-	  console.log(this.props)
+	  
     return (
 	
 	
      
-	 <View style={{ flex: 1, backgroundColor:"green"}}>
+	 <View style={{ flex: 1,}}>
 	
 		<View style={{justifyContent:'center', alignItems:'center', marginTop: 30}}>
 			<TextInput placeholder="Rechercher un ami"/>
 		</View>
+		
+			
 		<FlatList
-		  data={test}
+		  data={this.state.dataSource}
 		  keyExtractor={(item) => item.id.toString()}
 		  renderItem={({item}) => <ElementContact test={item} changeScreen={this._changeScreen}/>}
 		/>
