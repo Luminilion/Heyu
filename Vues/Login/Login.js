@@ -38,6 +38,8 @@ export default class Login extends React.Component {
           autoCapitalize="none"
           placeholder="Email"
           onChangeText={email => this.setState({ email })}
+          textContentType="emailAddress"
+          keyboardType='email-address'
           //value={this.state.email}
         />
 
@@ -56,7 +58,7 @@ export default class Login extends React.Component {
           title="Don't have an account? Sign Up"
           onPress={() => this.props.navigation.navigate('SignUp')}
         />
-        
+
       </View>
     )
   }
