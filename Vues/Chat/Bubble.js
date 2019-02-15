@@ -5,31 +5,57 @@ import { StyleSheet, View, Text, TextInput, Button, FlatList } from 'react-nativ
 
 class bubbleMe extends React.Component {
   render() {
-	const { test } = this.props
-	console.log("i")
-	console.log(test.sender)
-	console.log(test.texte)
-	console.log(test)
-	console.log("i")
+	  
+	const { test, ordre } = this.props
+	
+	console.log("là on est dans le bubble et ordre : "+ordre)
+	if(ordre==false){
 
-	if(test.sender==1){
-    return (
 	
-    
-	<View style={styles.bubbleMe}>
-		<Text style={styles.message} >{test.texte}</Text>
-	</View>
-	
-	
-     
-    )
+		if(test.sender==1){
+		return (
+		
+		
+		<View style={styles.bubbleMe}>
+			<Text style={styles.message} >{test.texte}</Text>
+		</View>
+		
+		
+		 
+		)
+		}
+		else{
+		return(
+		<View style={styles.bubbleShe}>
+			<Text style={styles.message} >{test.texte}</Text>
+		</View>
+		)
+		}
+		
 	}
+	
 	else{
-	return(
-	<View style={styles.bubbleShe}>
-		<Text style={styles.message} >{test.texte}</Text>
-	</View>
-	)
+		
+		if(test.sender==0){
+		return (
+		
+		
+		<View style={styles.bubbleMe}>
+			<Text style={styles.message} >{test.texte}</Text>
+		</View>
+		
+		
+		 
+		)
+		}
+		else{
+		return(
+		<View style={styles.bubbleShe}>
+			<Text style={styles.message} >{test.texte}</Text>
+		</View>
+		)
+		}
+		
 	}
 	
   }
