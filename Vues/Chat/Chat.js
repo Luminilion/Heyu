@@ -29,8 +29,6 @@ constructor(props){
 	
 componentDidMount() {
     	this.listenForItems(this.itemsRefs);
-		console.log("mouuuuuuuuuuuunt");
-		console.log(this.state.ordre);
 	
    }	
 	
