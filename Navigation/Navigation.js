@@ -15,9 +15,9 @@ const AppNavigationStack = createStackNavigator({
   Contacts : Contacts,
   Chat : Chat,
   Bonus : Bonus
-})
+}, {headerMode: 'none'})
 
-// Nvaigation stack for login logic : login or sign up
+// Navigation stack for login logic : login or sign up
 const LoginNavigationStack = createStackNavigator({
   Login : Login,
   SignUp : SignUp
@@ -30,5 +30,4 @@ export default createAppContainer(createSwitchNavigator(
     LoginNavigationStack : LoginNavigationStack,
     AppNavigationStack : AppNavigationStack
   }
-),
-{headerMode: 'none'})
+))
