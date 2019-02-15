@@ -6,6 +6,7 @@ import firebaseApp from '../../firebase'
 import Dialog from 'react-native-dialog'
 import ReAuthDialog from '../Dialogs/ReAuthentication'
 import BasicDialog from '../Dialogs/BasicOkCancel'
+import Swiper from 'react-native-animated-swiper'
 
 export default class Parameters extends React.Component {
 
@@ -65,6 +66,8 @@ export default class Parameters extends React.Component {
 
 	// Renders the visual
 	render() {
+
+		//// TODO: Set change user email + set user's name + change user password + reset password
 		return (
 			<View style={styles.container}>
 
@@ -85,25 +88,32 @@ export default class Parameters extends React.Component {
 					visible={ this.state.reAuthDialVis}
 				/>
 
-
-				<Text>
+				<Text style={{margin:25}}>
 					Hi {this.state.name ? this.state.name : this.state.email} !
 				</Text>
 
-				<Text style={{color: 'red'}}>
-					{this.state.errorMessage}
-				</Text>
+				<Swiper dots dotsBottom={20}>
+					<View style={styles.slide}>
+						<Text style={{color: 'red'}}>
+							{this.state.errorMessage}
+						</Text>
+					</View>
 
-				<Button
-					title='Sign out'
-					onPress={this.signOut}
-				/>
+					<View style={styles.slide}>
+						<Button
+							title='Sign out'
+							onPress={this.signOut}
+						/>
+					</View>
 
-				<Button
-					title='Delete Account'
-					color='red'
-					onPress={ this.showDialog }
-				/>
+					<View style={styles.slide}>
+						<Button
+							title='Delete Account'
+							color='red'
+							onPress={ this.showDialog }
+						/>
+					</View>
+				</Swiper>
 
 			</View>
 		)
@@ -115,5 +125,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+	slide: { alignItems: 'center', flex: 1, justifyContent: 'center' }
 })
