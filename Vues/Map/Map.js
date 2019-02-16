@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensi
 import MapView from 'react-native-maps';
 import icone from './bear.jpg';
 
-// Gets dimensions of screen to dynamically adjust 
+// Gets dimensions of screen to dynamically adjust
 const { width, height } = Dimensions.get("window");
 
 // Set dimensions of the card to be displayed
@@ -18,23 +18,23 @@ const Images = [
 ]
 
 class Map extends React.Component {
-	
+
 
 	_changeScreenChat = () => {
 	this.props.navigation.navigate("Chat")
 
   }
-  
+
 	_changeScreenContacts = () => {
 	this.props.navigation.navigate("Contacts")
 
   }
-  
+
 	_changeScreenBonus = () => {
-	this.props.navigation.navigate("Bonus")
+	this.props.navigation.navigate("Parameters")
 
   }
-  
+
   render() {
 	  console.log('render')
 
@@ -83,14 +83,14 @@ class Map extends React.Component {
 	          longitude: -122.6655507,
 	        },
 		}
-	    
+
 	};
 
     return (
-	
+
 
       <View style={{flex:1}}>
-		  
+
 
 	      <MapView
 		      ref={map => this.map = map}
@@ -104,25 +104,25 @@ class Map extends React.Component {
 			  longitudeDelta: 0.040142817690068,
 			  }}
 	      >
-		  
+
 			  <MapView.Marker key={1} onPress={() => this._changeScreen()} coordinate={{latitude: 45.521016, longitude: -122.6561917,}}>
-			        
-					
-					  <Text style={{backgroundColor: 'white', padding: 5}}>Salut à tous les amis</Text>
+
+
+					  <Text style={{backgroundColor: 'white', padding: 5}}>Salut ï¿½ tous les amis</Text>
 					  <Image
 						style={{width: 50, height:50}}
 						source={icone}
 					  />
-					  
-					
-					      
-			        
+
+
+
+
 			      </MapView.Marker>
-				  
-			  
+
+
 
 	      </MapView>
-		  
+
 		  <TouchableOpacity
 		  style={{backgroundColor: 'red', height: 50, width: 50, position: "absolute", top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
           onPress={() => this._changeScreenContacts()}>

@@ -96,6 +96,13 @@ export default class Parameters extends React.Component {
 
 				<Swiper dots dotsBottom={20}>
 					<View style={styles.slide}>
+						<Bonuses />
+					</View>
+
+					<View style={styles.slide}>
+						<Skins />
+					</View>
+					<View style={styles.slide}>
 						<Text style={{color: 'red'}}>
 							{this.state.errorMessage}
 						</Text>
@@ -108,14 +115,6 @@ export default class Parameters extends React.Component {
 							color='red'
 							onPress={ this.showDialog }
 						/>
-					</View>
-
-					<View style={styles.slide}>
-						<Bonuses />
-					</View>
-
-					<View style={styles.slide}>
-						<Skins />
 					</View>
 				</Swiper>
 
