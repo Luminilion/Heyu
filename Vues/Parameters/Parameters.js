@@ -7,6 +7,8 @@ import Dialog from 'react-native-dialog'
 import ReAuthDialog from '../Dialogs/ReAuthentication'
 import BasicDialog from '../Dialogs/BasicOkCancel'
 import Swiper from 'react-native-animated-swiper'
+import Bonuses from '../Bonus/Bonus'
+import Skins from '../Bonus/Skins'
 
 export default class Parameters extends React.Component {
 
@@ -88,7 +90,7 @@ export default class Parameters extends React.Component {
 					visible={ this.state.reAuthDialVis}
 				/>
 
-				<Text style={{margin:25}}>
+				<Text style={{marginTop:35, marginBottom:25}}>
 					Hi {this.state.name ? this.state.name : this.state.email} !
 				</Text>
 
@@ -97,21 +99,23 @@ export default class Parameters extends React.Component {
 						<Text style={{color: 'red'}}>
 							{this.state.errorMessage}
 						</Text>
-					</View>
-
-					<View style={styles.slide}>
 						<Button
 							title='Sign out'
 							onPress={this.signOut}
 						/>
-					</View>
-
-					<View style={styles.slide}>
 						<Button
 							title='Delete Account'
 							color='red'
 							onPress={ this.showDialog }
 						/>
+					</View>
+
+					<View style={styles.slide}>
+						<Bonuses />
+					</View>
+
+					<View style={styles.slide}>
+						<Skins />
 					</View>
 				</Swiper>
 
