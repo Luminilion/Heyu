@@ -11,12 +11,13 @@ class Contacts extends React.Component {
 	
 	constructor(props){
 		super(props);
-		this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
 		this.state = {
 	  	dataSource: [{ id: 0, pseudo: 'Pizza' }], 
 	  	dialogVisible: false,
 	  	newItem: 'Invalid Item'
 	  };
+	  
+	  this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
 		
 	};
 	

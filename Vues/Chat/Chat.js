@@ -17,18 +17,18 @@ constructor(props){
 	  	dialogVisible: false,
 	  	newItem: 'Invalid Item',
 		ordre: true,
+		exist: false,
 	  };
 	  
 	  this.itemsRefs = firebaseApp.database().ref("Discussions");
-	  this.envoiRefs = firebaseApp.database().ref("Discussions/BobbyGerard");
+	  this.envoiRefsPremierOrdre = firebaseApp.database().ref("Discussions/" + "Bobby" + this.props.navigation.getParam('pseudoContact'));
+	  this.envoiRefsDeuxiemeOrdre = firebaseApp.database().ref("Discussions/" + this.props.navigation.getParam('pseudoContact') + "Bobby" );
 		
 	};
 	
 	
 componentDidMount() {
     	this.listenForItems(this.itemsRefs);
-		console.log("mouuuuuuuuuuuunt");
-		console.log(this.state.ordre);
 	
    }	
 	
@@ -36,20 +36,28 @@ listenForItems(itemsRef) {
 	
 	itemsRef.on('value', (snap) => {
 		var nomPremierOrdre = "Bobby"+this.props.navigation.getParam('pseudoContact');
-		var nomDeuxiemeOrdre = this.props.navigation.getParam('pseudoContact');+"Boby";
-		this.setState({ordre:false});
-		console.log("alors là le state de ordre c'est " + this.state.ordre);
+		var nomDeuxiemeOrdre = this.props.navigation.getParam('pseudoContact')+"Bobby";
+		var nom="";
+
 		
-		if(snap.val()[nomPremierOrdre]!=undefined){ 
-			
-			
+		if(snap.val()[nomPremierOrdre]==undefined){ 
+			nom=nomDeuxiemeOrdre;
+			this.setState({ordre:false});
+		}
+		else{
+			nom=nomPremierOrdre;
+			this.setState({ordre:true});
+		}
+		console.log("Le nom de la liste c'est" + nom);
+		if(snap.val()[nom]!=undefined){
 		
-		console.log("le snap est" + snap.val()[nomPremierOrdre]);
+		this.setState({exist:true});
+		console.log("le snap est" + snap.val()[nom]);
 		
 		
 		  // get children as an array
 		  var items = [];
-		  snap.val()[nomPremierOrdre].forEach((child) =>{
+		  snap.val()[nom].forEach((child) =>{
 			items.push({
 			  sender: child.sender,
 			  texte: child.texte,
@@ -63,29 +71,10 @@ listenForItems(itemsRef) {
 		  });
 
 		}
-		
 		else{
-			if(snap.val()[nomDeuxiemeOrdre]!=undefined){ 
-			console.log("le snap est" + snap.val()[nomDeuxiemeOrdre]);
-		
-		
-			  // get children as an array
-			  var items = [];
-			  snap.val()[nomDeuxiemeOrdre].forEach((child) =>{
-				items.push({
-				  sender: child.sender,
-				  texte: child.texte,
-				  _key: child.key
-				});
-			  });
-
-			  
-			  items = items.map((item, index) => {
-				return {id: index, sender: item.sender, texte: item.texte};
-			  });
-			}
-			
+			this.setState({exist:false});
 		}
+		
 		
 		  this.setState({
 			dataSource: items
@@ -98,18 +87,44 @@ listenForItems(itemsRef) {
 }
 
 _writeElem(sender, texte) {
-		this.envoiRefs.push({ sender, texte }).then((data)=>{
+	
+		
+		
+		var length = 0;
+		
+		if(this.state.exist==true){
+			length=this.state.dataSource.length;;
+		}
+		
+		if(this.state.ordre==true){
+			console.log("c'est qui?");
+			sender=0;
+			this.envoiRefsPremierOrdre.child(length).set({ sender, texte }).then((data)=>{
 			//success callback
 			console.log('data ' , data)
-		}).catch((error)=>{
-			//error callback
-			console.log('error ' , error)
-		});
+			}).catch((error)=>{
+				//error callback
+				console.log('error ' , error)
+			});
+		}
+		else{
+			console.log("c'est John?");
+			sender=1;
+			this.envoiRefsDeuxiemeOrdre.child(length).set({ sender, texte }).then((data)=>{
+			//success callback
+			console.log('data ' , data)
+			}).catch((error)=>{
+				//error callback
+				console.log('error ' , error)
+			});
+			
+		}
+		
    }
   
   render() {
 	  
-
+	  console.log("là c'est dans render et ordre: " + this.state.ordre)
 	  
     return (
 	
@@ -122,7 +137,7 @@ _writeElem(sender, texte) {
 		
 		  data={this.state.dataSource}
 		  keyExtractor={(item) => item.id.toString()}
-		  renderItem={({item}) => <Bubble test={item}/>}
+		  renderItem={({item}) => <Bubble test={item} ordre={this.state.ordre}/>}
 		/>
 		<View style={styles.barre_message}>
 			<TextInput style={styles.input} placeholder="..." onChangeText={ (itemName) => this.setState({newItem: itemName}) }/>
