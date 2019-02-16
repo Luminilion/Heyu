@@ -1,4 +1,4 @@
-/* 
+/*
   Screen for the unidentified user to register to the application.
   Only current way to register is through mail + password.
   Possibility to add more register ways through https://firebase.google.com/docs/auth/web/start
@@ -41,6 +41,8 @@ render() {
           autoCapitalize="none"
           style={styles.textInput}
           onChangeText={email => this.setState({ email })}
+          textContentType="emailAddress"
+          keyboardType='email-address'
           //value={this.state.email}
         />
 

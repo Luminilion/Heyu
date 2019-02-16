@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import firebaseApp from '../../firebase';
 import icone from './bear.jpg';
 
-// Gets dimensions of screen to dynamically adjust 
+// Gets dimensions of screen to dynamically adjust
 const { width, height } = Dimensions.get("window");
 
 // Set dimensions of the card to be displayed
@@ -72,7 +72,7 @@ class Map extends React.Component {
 	          longitude: -122.6655507,
 	        },
 		}
-	    
+
 	};
 	  
 	this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
@@ -138,7 +138,7 @@ class Map extends React.Component {
   }
   
 	_changeScreenBonus = () => {
-	this.props.navigation.navigate("Bonus")
+	this.props.navigation.navigate("Parameters")
 
   }
   
@@ -146,10 +146,10 @@ class Map extends React.Component {
 	  console.log(this.state.dataSource)
 
     return (
-	
+
 
       <View style={{flex:1}}>
-		  
+
 
 	      <MapView
 		      ref={map => this.map = map}
@@ -163,12 +163,11 @@ class Map extends React.Component {
 			  longitudeDelta: 0.040142817690068,
 			  }}
 	      >
-		  
-				  
+      
 				   {this.state.dataSource.map((marker, index) => {
 			    return (
 			      <MapView.Marker  onPress={() => this._changeScreenChat(marker.pseudo)} key={index} coordinate={{latitude: marker.latitude, longitude: marker.longitude}}>
-				  
+
 					  <Image
 						style={{width: 50, height:50}}
 						source={icone}
@@ -180,13 +179,9 @@ class Map extends React.Component {
 			      </MapView.Marker>
 			    );
 			  })}
-			  
-
-				  
-			  
 
 	      </MapView>
-		  
+
 		  <TouchableOpacity
 		  style={{backgroundColor: 'red', height: 50, width: 50, position: "absolute", top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
           onPress={() => this._changeScreenContacts()}>
