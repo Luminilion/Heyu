@@ -6,12 +6,13 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'firebase'
+import { Snackbar } from 'react-native-paper'
 
 // Login component
 export default class Login extends React.Component {
 
   // Saves input email and password and possible error message
-  state = { email: '', password: '', errorMessage: null }
+  state = { email: '', password: '', errorMessage: null, confirmResetVis : false }
 
   // Handles login logic
   handleLogin = () => {
@@ -23,6 +24,12 @@ export default class Login extends React.Component {
 
   // Handles visual rendering
   render() {
+    const confirmReset = this.props.navigation.getParam('confirmReset', false);
+    if (confirmReset) {
+      console.log('Enterd confirmReset');
+      this.setState( {confirmResetVis : true} );
+    }
+
     return (
 
       <View style={styles.container}>
@@ -59,6 +66,24 @@ export default class Login extends React.Component {
           onPress={() => this.props.navigation.navigate('SignUp')}
         />
 
+        <Button
+          title='Forgot your password ?'
+          onPress={() => this.props.navigation.navigate('PasswordReset')}
+        />
+
+        <Snackbar
+          visible={this.state.confirmResetVis}
+          onDismiss={() => this.setState({ visible: false })}
+          action={{
+            duration : 100000,
+            label: 'Undo',
+            onPress: () => {
+              // Do something
+            },
+          }}
+        >
+          Hey there! I'm a Snackbar.
+        </Snackbar>
       </View>
     )
   }

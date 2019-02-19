@@ -8,6 +8,7 @@ import Loading from '../Vues/Login/Loading'
 import Login from '../Vues/Login/Login'
 import SignUp from '../Vues/Login/SignUp'
 import Parameters from '../Vues/Parameters/Parameters'
+import PasswordReset from '../Vues/Login/PasswordReset'
 
 // Navigation stack for the app's logic : map, conversation, contacts and bonuses
 const AppNavigationStack = createStackNavigator({
@@ -20,7 +21,8 @@ const AppNavigationStack = createStackNavigator({
 // Navigation stack for login logic : login or sign up
 const LoginNavigationStack = createStackNavigator({
   Login : Login,
-  SignUp : SignUp
+  SignUp : SignUp,
+  PasswordReset : PasswordReset
 })
 
 // AppContainer for navigation logic through the whole app
