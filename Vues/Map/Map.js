@@ -24,7 +24,7 @@ class Map extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817}],
+	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817, image: ""}],
 	  	dialogVisible: false,
 	  	newItem: 'Invalid Item',
 		ordre: true,
@@ -84,6 +84,7 @@ class Map extends React.Component {
 	this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
 	this.envoiRefs = firebaseApp.database().ref("Utilisateurs/"+ "0");
 
+
 	};
 
 	componentDidMount() {
@@ -104,6 +105,7 @@ class Map extends React.Component {
 			  message: child.message,
 			  latitude: child.latitude,
 			  longitude: child.longitude,
+        image: child.image,
 			  _key: child.key
 			});
 		  });
@@ -111,7 +113,7 @@ class Map extends React.Component {
 
 
 		  items = items.map((item, index) => {
-			return {id: index, pseudo: item.pseudo, message: item.message, latitude: item.latitude, longitude: item.longitude, };
+			return {id: index, pseudo: item.pseudo, message: item.message, latitude: item.latitude, longitude: item.longitude, image: item.image};
 		  });
 
 		  this.setState({
@@ -181,7 +183,7 @@ class Map extends React.Component {
 
 					  <Image
 						style={{width: 50, height:50}}
-						source={{uri: 'https://theocvnt.alwaysdata.net/rainbowDog.gif'}}
+						source={{uri: 'https://theocvnt.alwaysdata.net/' + marker.image + '.gif'}}
 					  />
 					  <MapView.Callout style={{minWidth: 150}}>
 						<Text style={{fontWeight:'bold'}}>{marker.pseudo}</Text>
