@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import firebaseApp from '../../firebase';
-import icone from './bear.jpg';
+import SnackBar from 'react-native-snackbar-component';
+
 
 // Gets dimensions of screen to dynamically adjust
 const { width, height } = Dimensions.get("window");
@@ -19,15 +20,20 @@ const Images = [
 ]
 
 class Map extends React.Component {
-	
+
 	constructor(props){
 		super(props);
 		this.state = {
-	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817}], 
+	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817, image: ""}],
 	  	dialogVisible: false,
 	  	newItem: 'Invalid Item',
 		ordre: true,
 		exist: false,
+    //pour la snackBar
+    visibleSnackBar: false,
+    textSnackBar: "Je suis une snackBar",
+    //fin de pour la snackBar
+
 	    markers: [
 	      {
 	        coordinate: {
@@ -74,20 +80,21 @@ class Map extends React.Component {
 		}
 
 	};
-	  
+
 	this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
 	this.envoiRefs = firebaseApp.database().ref("Utilisateurs/"+ "0");
-		
+
+
 	};
-	
+
 	componentDidMount() {
     	this.listenForItems(this.itemsRefs);
 		console.log("mouuuuuuuuuuuunt");
-	
-   }	
-	
+
+   }
+
 	listenForItems(itemsRef) {
-		itemsRef.on('value', (snap) => { 
+		itemsRef.on('value', (snap) => {
 
 		  // get children as an array
 		  var items = [];
@@ -98,14 +105,15 @@ class Map extends React.Component {
 			  message: child.message,
 			  latitude: child.latitude,
 			  longitude: child.longitude,
+        image: child.image,
 			  _key: child.key
 			});
 		  });
 		  console.log(items);
 
-		  
+
 		  items = items.map((item, index) => {
-			return {id: index, pseudo: item.pseudo, message: item.message, latitude: item.latitude, longitude: item.longitude, };
+			return {id: index, pseudo: item.pseudo, message: item.message, latitude: item.latitude, longitude: item.longitude, image: item.image};
 		  });
 
 		  this.setState({
@@ -114,7 +122,7 @@ class Map extends React.Component {
 
 		});
   }
-  
+
   _writeElem(message) {
 			this.envoiRefs.update({ message }).then((data)=>{
 			//success callback
@@ -123,25 +131,30 @@ class Map extends React.Component {
 				//error callback
 				console.log('error ' , error)
 			});
-		
+
    }
-	
+
+   _snackBar(text) {
+     this.setState({visibleSnackBar: true});
+     this.setState({textSnackBar: text});
+   }
+
 
 	_changeScreenChat = (pseudoContact) => {
 	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
 
   }
-  
+
 	_changeScreenContacts = () => {
 	this.props.navigation.navigate("Contacts")
 
   }
-  
+
 	_changeScreenBonus = () => {
 	this.props.navigation.navigate("Parameters")
 
   }
-  
+
   render() {
 	  console.log(this.state.dataSource)
 
@@ -163,24 +176,26 @@ class Map extends React.Component {
 			  longitudeDelta: 0.040142817690068,
 			  }}
 	      >
-      
+
 				   {this.state.dataSource.map((marker, index) => {
 			    return (
 			      <MapView.Marker  onPress={() => this._changeScreenChat(marker.pseudo)} key={index} coordinate={{latitude: marker.latitude, longitude: marker.longitude}}>
 
 					  <Image
 						style={{width: 50, height:50}}
-						source={icone}
+						source={{uri: 'https://theocvnt.alwaysdata.net/' + marker.image + '.gif'}}
 					  />
 					  <MapView.Callout style={{minWidth: 150}}>
 						<Text style={{fontWeight:'bold'}}>{marker.pseudo}</Text>
-						<Text>{marker.message}t</Text>
+						<Text>{marker.message}</Text>
 					  </MapView.Callout>
 			      </MapView.Marker>
 			    );
 			  })}
 
 	      </MapView>
+
+        <SnackBar visible={this.state.visibleSnackBar} textMessage={this.state.textSnackBar} actionHandler={()=>{this.setState({visibleSnackBar: false});}} actionText="X"/>
 
 		  <TouchableOpacity
 		  style={{backgroundColor: 'red', height: 50, width: 50, position: "absolute", top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
