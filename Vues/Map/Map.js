@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import firebaseApp from '../../firebase';
-import SnackBar from 'react-native-snackbar-component';
+import { Constants, Location, Permissions } from 'expo';
 
 
 // Gets dimensions of screen to dynamically adjust
@@ -29,10 +29,7 @@ class Map extends React.Component {
 	  	newItem: 'Invalid Item',
 		ordre: true,
 		exist: false,
-    //pour la snackBar
-    visibleSnackBar: false,
-    textSnackBar: "Je suis une snackBar",
-    //fin de pour la snackBar
+    location: null,
 
 	    markers: [
 	      {
@@ -87,10 +84,28 @@ class Map extends React.Component {
 
 	};
 
+  componentWillMount() {
+    if (false) {//if (Platform.OS == 'android' && !Constants.isDevice) {
+      // L'app est run depuis l'emulateur android du coup ça ne va pas marcher
+      // Il faut display un message d'erreur
+    } else {
+      this._getLocationAsync();
+    }
+  }
+
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      console.log("permission was not granted")
+      // La permission pour la loc a été refusée aie aie ouille il faut faire qchose
+      // On peut rediriger sur une autre vue qui explique pourquoi c'est cool de nous filer la loc
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({ location })
+  }
+
 	componentDidMount() {
     	this.listenForItems(this.itemsRefs);
-		console.log("mouuuuuuuuuuuunt");
-
    }
 
 	listenForItems(itemsRef) {
@@ -98,7 +113,7 @@ class Map extends React.Component {
 
 		  // get children as an array
 		  var items = [];
-		  console.log(snap.val());
+		  //console.log(snap.val());
 		  snap.val().forEach((child) =>{
 			items.push({
 			  pseudo: child.pseudo,
@@ -109,7 +124,7 @@ class Map extends React.Component {
 			  _key: child.key
 			});
 		  });
-		  console.log(items);
+		  //console.log(items);
 
 
 		  items = items.map((item, index) => {
@@ -134,12 +149,6 @@ class Map extends React.Component {
 
    }
 
-   _snackBar(text) {
-     this.setState({visibleSnackBar: true});
-     this.setState({textSnackBar: text});
-   }
-
-
 	_changeScreenChat = (pseudoContact) => {
 	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
 
@@ -157,11 +166,17 @@ class Map extends React.Component {
 
   render() {
 	  console.log(this.state.dataSource)
+    let text = 'Waiting';
+    if (this.state.location) {
+      text = JSON.stringify(this.state.location)
+    }
 
     return (
 
 
       <View style={{flex:1}}>
+
+      <Text>{text}</Text>
 
 
 	      <MapView
@@ -194,8 +209,6 @@ class Map extends React.Component {
 			  })}
 
 	      </MapView>
-
-        <SnackBar visible={this.state.visibleSnackBar} textMessage={this.state.textSnackBar} actionHandler={()=>{this.setState({visibleSnackBar: false});}} actionText="X"/>
 
 		  <TouchableOpacity
 		  style={{backgroundColor: 'red', height: 50, width: 50, position: "absolute", top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}

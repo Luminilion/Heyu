@@ -6,7 +6,7 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import firebase from 'firebase'
-import { Snackbar } from 'react-native-paper'
+import SnackBar from 'react-native-snackbar-component'
 
 // Login component
 export default class Login extends React.Component {
@@ -22,14 +22,19 @@ export default class Login extends React.Component {
     });
   }
 
-  // Handles visual rendering
-  render() {
+  componentWillMount() {
+    // Check because non working
     const confirmReset = this.props.navigation.getParam('confirmReset', false);
-    if (confirmReset) {
+    console.log('confirmReset value is ' + confirmReset);
+    if (confirmReset && !this.state.confirmResetVis) {
       console.log('Enterd confirmReset');
       this.setState( {confirmResetVis : true} );
+      setTimeout(() => {this.setState({confirmResetVis: false})}, 10000);
     }
+  }
 
+  // Handles visual rendering
+  render() {
     return (
 
       <View style={styles.container}>
@@ -71,19 +76,7 @@ export default class Login extends React.Component {
           onPress={() => this.props.navigation.navigate('PasswordReset')}
         />
 
-        <Snackbar
-          visible={this.state.confirmResetVis}
-          onDismiss={() => this.setState({ visible: false })}
-          action={{
-            duration : 100000,
-            label: 'Undo',
-            onPress: () => {
-              // Do something
-            },
-          }}
-        >
-          Hey there! I'm a Snackbar.
-        </Snackbar>
+        <SnackBar visible={this.state.confirmResetVis} textMessage='Email successfully sent !' actionHandler={()=>{this.setState({confirmResetVis: false});}} actionText="X"/>
       </View>
     )
   }
