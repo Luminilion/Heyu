@@ -1,6 +1,12 @@
+/*
+  Main View : displays the map centered on the user's position.
+  Other users are visible if nearby.
+*/
+
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensions, Animated, TouchableOpacity } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Image, KeyboardAvoidingView, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
+import { Marker, Callout } from 'react-native-maps';
 import firebaseApp from '../../firebase';
 import { Constants, Location, Permissions } from 'expo';
 
@@ -27,14 +33,15 @@ class Map extends React.Component {
 	  	dataSource: [{ id: 0, pseudo: "Guillaume", message:"hey!", latitude: 45.524548, longitude: -122.6749817, image: ""}],
 	  	dialogVisible: false,
 	  	newItem: 'Invalid Item',
-		ordre: true,
-		exist: false,
-    location: null,
+
+      ordre: true,
+  		exist: false,
+      location: null,
 
 	    markers: [
 	      {
 	        coordinate: {
-	          latitude: 45.524548,
+	          latitude: 45.544591,
 	          longitude: -122.6749817,
 	        },
 	        title: "Best Place",
@@ -43,7 +50,7 @@ class Map extends React.Component {
 	      },
 	      {
 	        coordinate: {
-	          latitude: 45.524698,
+	          latitude: 45.544611,
 	          longitude: -122.6655507,
 	        },
 	        title: "Second Best Place",
@@ -52,7 +59,7 @@ class Map extends React.Component {
 	      },
 	      {
 	        coordinate: {
-	          latitude: 45.5230786,
+	          latitude: 45.5430711,
 	          longitude: -122.6701034,
 	        },
 	        title: "Third Best Place",
@@ -61,7 +68,7 @@ class Map extends React.Component {
 	      },
 	      {
 	        coordinate: {
-	          latitude: 45.521016,
+	          latitude: 45.541091,
 	          longitude: -122.6561917,
 	        },
 	        title: "Fourth Best Place",
@@ -78,6 +85,7 @@ class Map extends React.Component {
 
 	};
 
+  // Creates a shortcut to access all users and first user
 	this.itemsRefs = firebaseApp.database().ref("Utilisateurs");
 	this.envoiRefs = firebaseApp.database().ref("Utilisateurs/"+ "0");
 
@@ -85,7 +93,7 @@ class Map extends React.Component {
 	};
 
   componentWillMount() {
-    if (false) {//if (Platform.OS == 'android' && !Constants.isDevice) {
+    if (Platform.OS == 'android' && !Constants.isDevice) {
       // L'app est run depuis l'emulateur android du coup ça ne va pas marcher
       // Il faut display un message d'erreur
     } else {
@@ -93,6 +101,7 @@ class Map extends React.Component {
     }
   }
 
+  // Checks if locations can be used, asks for permission in inherent case
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -108,6 +117,8 @@ class Map extends React.Component {
     	this.listenForItems(this.itemsRefs);
    }
 
+   // Loads and listen to all items in the itemsRef database
+   // Note : has to be a list of users
 	listenForItems(itemsRef) {
 		itemsRef.on('value', (snap) => {
 
@@ -138,6 +149,7 @@ class Map extends React.Component {
 		});
   }
 
+  // Sends the input message from the envoiRefs user to be displayed
   _writeElem(message) {
 			this.envoiRefs.update({ message }).then((data)=>{
 			//success callback
@@ -149,23 +161,25 @@ class Map extends React.Component {
 
    }
 
+   // Changes to conversation with input pseudoContact
 	_changeScreenChat = (pseudoContact) => {
 	    this.props.navigation.navigate("Chat", { pseudoContact: pseudoContact });
 
   }
 
+  // Changes view to contacts view
 	_changeScreenContacts = () => {
 	this.props.navigation.navigate("Contacts")
 
   }
 
+  // Change to parameters screen
 	_changeScreenBonus = () => {
 	this.props.navigation.navigate("Parameters")
 
   }
 
   render() {
-	  console.log(this.state.dataSource)
     let text = 'Waiting';
     if (this.state.location) {
       text = JSON.stringify(this.state.location)
@@ -181,68 +195,103 @@ class Map extends React.Component {
 
 	      <MapView
 		      ref={map => this.map = map}
-			  initialRegion={this.state.region}
-			  style={styles.container}
+  			  initialRegion={this.state.region}
+  			  style={styles.container}
 		      showsUserLocation={true}
-			  region= {{
-			  latitude: this.state.lui.coordinate.latitude,
-			  longitude: this.state.lui.coordinate.longitude,
-			  latitudeDelta: 0.04864195044303443,
-			  longitudeDelta: 0.040142817690068,
-			  }}
+  			  region= {{
+  			       latitude: this.state.lui.coordinate.latitude,
+  			       longitude: this.state.lui.coordinate.longitude,
+  			       latitudeDelta: 0.04864195044303443,
+  			       longitudeDelta: 0.040142817690068,
+  			  }}
 	      >
 
-				   {this.state.dataSource.map((marker, index) => {
-			    return (
-			      <MapView.Marker  onPress={() => this._changeScreenChat(marker.pseudo)} key={index} coordinate={{latitude: marker.latitude, longitude: marker.longitude}}>
+          {this.state.dataSource.map((marker, index) => {
+            return (
+              <Marker
+                onPress={() => this._changeScreenChat(marker.pseudo)}
+                key={index}
+                coordinate={{latitude: marker.latitude, longitude: marker.longitude}}>
 
-					  <Image
-						style={{width: 50, height:50}}
-						source={{uri: 'https://theocvnt.alwaysdata.net/' + marker.image + '.gif'}}
-					  />
-					  <MapView.Callout style={{minWidth: 150}}>
-						<Text style={{fontWeight:'bold'}}>{marker.pseudo}</Text>
-						<Text>{marker.message}</Text>
-					  </MapView.Callout>
-			      </MapView.Marker>
-			    );
-			  })}
+                <Image
+                  style={{width: 50, height:50}}
+                  source={{uri: 'https://theocvnt.alwaysdata.net/' + marker.image + '.gif'}}
+                />
+                <Callout style={{minWidth: 150}}>
+
+                  <Text style={{fontWeight:'bold'}}>{marker.pseudo}</Text>
+                  <Text>{marker.message}</Text>
+
+                </Callout>
+              </Marker>
+  			    );
+  			  })}
+
+          {this.state.markers.map((marker, index) => {
+            return (
+              <Marker
+                key={index}
+                coordinate={{latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude}}>
+
+                <Image
+                  style={{width: 50, height:50}}
+                  source={marker.image}
+                />
+
+                <Callout>
+                  <Text style={{fontWeight:'bold'}}>{marker.title}</Text>
+                  <Text>{marker.description}</Text>
+                </Callout>
+
+              </Marker>
+            )
+          })}
 
 	      </MapView>
 
 		  <TouchableOpacity
-		  style={{backgroundColor: 'red', height: 50, width: 50, position: "absolute", top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
-          onPress={() => this._changeScreenContacts()}>
+        style={{
+          backgroundColor: 'red', height: 50, width: 50, position: "absolute",
+          top:0 , left: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
+        onPress={() => this._changeScreenContacts()}
+      />
+		  <TouchableOpacity
+		      style={{
+            backgroundColor: 'green', height: 30, width: 30, position: "absolute",
+            top:0 ,alignSelf:'center', borderRadius:50, marginTop:30
+          }}
+          onPress={() => this._changeScreenBonus()}
+          >
+    			  <Image style={{height: 30, width: 30}}
+    			         source={{uri: 'https://theocvnt.alwaysdata.net/applicationImages/question-mark.png'}}
+    			  />
 		  </TouchableOpacity>
 		  <TouchableOpacity
-		  style={{backgroundColor: 'green', height: 30, width: 30, position: "absolute", top:0 ,alignSelf:'center', borderRadius:50, marginTop:30}}
-          onPress={() => this._changeScreenBonus()}>
-			  <Image
-			  style={{height: 30, width: 30}}
-			  source={{uri: 'https://theocvnt.alwaysdata.net/applicationImages/question-mark.png'}}
-			  />
-		  </TouchableOpacity>
-		  <TouchableOpacity
-		  style={{backgroundColor: 'orange', height: 50, width: 50, position: "absolute", top:0 , right: 0, paddingVertical: 10, borderRadius:50, marginTop:30}}
+		      style={{
+            backgroundColor: 'orange', height: 50, width: 50, position: "absolute",
+            top:0 , right: 0, paddingVertical: 10, borderRadius:50, marginTop:30
+          }}
           onPress={() => this._changeScreenChat()}>
 		  </TouchableOpacity>
 
-	      <KeyboardAvoidingView behavior="padding" enabled>
-			<View style={styles.barre_message}>
-				<TextInput style={styles.input} placeholder="..." onChangeText={ (itemName) => this.setState({newItem: itemName}) }/>
-				<TouchableOpacity
-				style={{height: 50, width: 50}}
-				onPress={ () => { this._writeElem(this.state.newItem)}}>
-					<Image
-					style={{width: 50, height: 50}}
-					source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
-					/>
-				</TouchableOpacity>
-		</View>
+	    <KeyboardAvoidingView behavior="padding" enabled>
+        <View style={styles.barre_message}>
+  				<TextInput
+            style={styles.input} placeholder="Enter your message"
+            onChangeText={ (itemName) => this.setState({newItem: itemName})
+          }/>
+  				<TouchableOpacity
+    				style={{height: 50, width: 50}}
+    				onPress={() => { this._writeElem(this.state.newItem)}}>
+    					<Image
+      					style={{width: 50, height: 50}}
+      					source={{uri: 'https://theocvnt.alwaysdata.net/send.png'}}
+    					/>
+  				</TouchableOpacity>
+  		  </View>
 		  </KeyboardAvoidingView>
+
       </View>
-
-
     );
   }
 }

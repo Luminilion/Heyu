@@ -35,6 +35,7 @@ export default class Loading extends React.Component {
 
 }
 
+// Basic loading view style
 const styles = StyleSheet.create({
   container: {
     flex: 1,
